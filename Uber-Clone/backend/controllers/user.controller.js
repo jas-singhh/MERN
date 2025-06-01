@@ -1,6 +1,8 @@
 const userModel = require('../models/user.model');
+const BlacklistedTokenModel = require('../models/blacklisted-token.model');
 const userService = require('../services/user.service');
 const {validationResult} = require('express-validator');
+const blacklistedTokenModel = require('../models/blacklisted-token.model');
 
 /**
  * Register a new user
@@ -48,10 +50,7 @@ module.exports.loginUser = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const {email, password} = req.body;      
-        
-        console.log("email:", email);
-        
+        const {email, password} = req.body;              
 
         // Find user by email
         // Note: The password field is selected explicitly to allow password comparison
@@ -68,6 +67,11 @@ module.exports.loginUser = async (req, res, next) => {
             
         // Generate token
         const token = user.generateAuthToken();
+        // Check if the token is blacklisted
+        const isBlacklisted = await blacklistedTokenModel.exists({ token });
+        if (isBlacklisted) {
+            return res.status(401).json({ message: "Token is blacklisted, please login again" });
+        }
 
         // 200 - OK
         return res.status(200).json({ token, user });
@@ -92,6 +96,32 @@ module.exports.getUserProfile = async (req, res, next) => {
         res.status(200).json({ user });
     } catch (error) {
         console.error("Error getting user profile:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+/**
+ * Logout user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+module.exports.logoutUser = async (req, res, next) => {
+    try {
+        // Store the cookie in the database
+        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorised" });
+        }
+
+        await blacklistedTokenModel.create({ token });// automatically sets expiration based on the schema
+
+        // Clear the cookie
+        res.clearCookie('token');
+
+        return res.status(200).json({ message: "User logged out successfully" });
+
+    } catch (error) {
+        console.error("Error logging out user:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 }
