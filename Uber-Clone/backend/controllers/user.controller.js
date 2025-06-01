@@ -9,7 +9,7 @@ const {validationResult} = require('express-validator');
  */
 module.exports.registerUser = async (req, res, next) => {
     try {
-        // Validate request body
+        // Check for errors in the request body
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -22,7 +22,7 @@ module.exports.registerUser = async (req, res, next) => {
             firstname: fullname.firstname,
             lastname: fullname.lastname,
             email,
-            hashedPassword
+            password: hashedPassword
         });
         // Generate token
         const token = user.generateAuthToken();
@@ -42,7 +42,36 @@ module.exports.registerUser = async (req, res, next) => {
  */
 module.exports.loginUser = async (req, res, next) => {
     try {
-       
+        // Check for errors in the request body
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const {email, password} = req.body;      
+        
+        console.log("email:", email);
+        
+
+        // Find user by email
+        // Note: The password field is selected explicitly to allow password comparison
+        const user = await userModel.findOne({email}).select('+password');// + select includes the password field in the result
+       if (!user) {
+            return res.status(401).json({message: "Invalid email"});
+        }
+
+        // Compare the provided password with the stored hashed password
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({message: "Invalid password"});
+        }
+            
+        // Generate token
+        const token = user.generateAuthToken();
+
+        // 200 - OK
+        return res.status(200).json({ token, user });
+
     } catch (error) {
         console.error("Error logging in user:", error);
         res.status(500).json({ message: "Internal server error" });
