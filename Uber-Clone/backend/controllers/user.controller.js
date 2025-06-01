@@ -77,3 +77,21 @@ module.exports.loginUser = async (req, res, next) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+/**
+ * Get user profile
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+module.exports.getUserProfile = async (req, res, next) => {
+    try {
+        const user = await userModel.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error("Error getting user profile:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
