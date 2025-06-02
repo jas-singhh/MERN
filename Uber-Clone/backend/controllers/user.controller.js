@@ -1,5 +1,4 @@
 const userModel = require('../models/user.model');
-const BlacklistedTokenModel = require('../models/blacklisted-token.model');
 const userService = require('../services/user.service');
 const {validationResult} = require('express-validator');
 const blacklistedTokenModel = require('../models/blacklisted-token.model');
@@ -18,6 +17,13 @@ module.exports.registerUser = async (req, res, next) => {
         }        
 
         const {fullname, email, password} = req.body;
+
+        // Check if user already exists
+        const doesUserExist = await userModel.exists({email});
+        if (doesUserExist) {
+            return res.status(400).json({ message: "User with this email already exists" });
+        }
+
         const hashedPassword = await userModel.hashPassword(password);
 
         const user = await userService.createUser({
@@ -30,10 +36,10 @@ module.exports.registerUser = async (req, res, next) => {
         const token = user.generateAuthToken();
 
         // 201 - Created
-        res.status(201).json({ token });
+       return res.status(201).json({ token });
     } catch (error) {
         console.error("Error registering user:", error);
-        res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
 
@@ -93,10 +99,10 @@ module.exports.getUserProfile = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.status(200).json({ user });
+        return res.status(200).json({ user });
     } catch (error) {
         console.error("Error getting user profile:", error);
-        res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
 
@@ -122,6 +128,6 @@ module.exports.logoutUser = async (req, res, next) => {
 
     } catch (error) {
         console.error("Error logging out user:", error);
-        res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
