@@ -13,7 +13,6 @@ const blacklistedTokenSchema = new mongoose.Schema({
         default: Date.now, // Automatically set the creation date to now
         expires: "86400"// 1 day in seconds, e.g., "1d" or 86400 seconds
     }
-
 });
 
 module.exports = mongoose.model('BlacklistedToken', blacklistedTokenSchema);
