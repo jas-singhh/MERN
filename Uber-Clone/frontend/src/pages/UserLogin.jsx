@@ -1,17 +1,33 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const UserLoginPage = () => {
-  return (
-    <div className="w-full">
-      <div className="flex flex-col w-full items-center p-7">
-        <img
-          src="https://pngimg.com/uploads/uber/small/uber_PNG16.png"
-          alt="Uber Logo"
-          className="w-20 self-start"
-        />
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [userData, setUserData] = useState({});
 
-        <form action="" className="w-full">
-          <div className="flex flex-col w-full mb-6">
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // User login data
+    const user = { email, password };
+    setUserData(user);
+
+    // Clear the input fields
+    setEmail("");
+    setPassword("");
+  };
+
+  return (
+    <div className="w-full h-screen">
+      <div className="flex flex-col w-full h-full items-center p-7 justify-between">
+        <form action="" className="w-full" onSubmit={handleSubmit}>
+          <img
+            src="https://pngimg.com/uploads/uber/small/uber_PNG16.png"
+            alt="Uber Logo"
+            className="w-20 self-start"
+          />
+          <div className="flex flex-col w-full mb-3">
             <label htmlFor="email" className="text-xl mb-2 font-semibold">
               What's your email
             </label>
@@ -21,10 +37,12 @@ const UserLoginPage = () => {
               id="email"
               placeholder="Enter your email"
               className="w-full bg-[#eeeeee] p-2 rounded"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="flex flex-col w-full mb-6">
-            <label htmlFor="password" className="text-lg mb-2">
+            <label htmlFor="password" className="text-lg mb-2 font-semibold">
               Password
             </label>
             <input
@@ -33,24 +51,37 @@ const UserLoginPage = () => {
               id="password"
               placeholder="Enter your Password"
               className="w-full bg-[#eeeeee] p-2 rounded"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button
-            type="submit"
-            className="bg-[#111] font-semibold text-white mb-7 px-4 py-2 border w-full text-lg rounded"
-          >
-            Login
-          </button>
+
+          <div className="flex flex-col w-full justify-center items-center space-y-1">
+            <button
+              type="submit"
+              className="bg-[#111] text-white px-4 py-2 border w-full text-md rounded"
+            >
+              Login
+            </button>
+            <p>
+              Don't have an account?
+              <Link to={"/signup"} className="text-blue-600 cursor-pointer">
+                {" "}
+                Sign up
+              </Link>
+            </p>
+          </div>
         </form>
 
-        <Link href={"/signup"}>Don't have an account? Sign up</Link>
-
-        <button
-          type="submit"
-          className="bg-green-600 font-semibold text-white mb-7 px-4 py-2  w-full text-lg rounded"
-        >
-          Login as Driver
-        </button>
+        <div className="flex flex-col w-full">
+          <Link
+            type="submit"
+            className="bg-green-600 text-white mb-7 px-4 py-2  w-full text-md rounded flex justify-center"
+            to={"/driver/login"}
+          >
+            Login as Driver
+          </Link>
+        </div>
       </div>
     </div>
   );
