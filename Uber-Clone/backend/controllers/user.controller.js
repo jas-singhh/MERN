@@ -10,8 +10,6 @@ const blacklistedTokenModel = require("../models/blacklisted-token.model");
  */
 module.exports.registerUser = async (req, res, next) => {
   try {
-    console.log("req.body", req.body);
-
     // Check for errors in the request body
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -38,8 +36,6 @@ module.exports.registerUser = async (req, res, next) => {
 
     // Generate token
     const token = user.generateAuthToken();
-
-    console.log("user after token", user);
 
     // 201 - Created
     return res.status(201).json({ token, user });

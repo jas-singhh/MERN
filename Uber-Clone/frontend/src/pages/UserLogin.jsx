@@ -1,17 +1,33 @@
 import { Link } from "react-router-dom";
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserDataContext } from "../context/UserContext";
 
 const UserLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState({});
+
+  const { user, setUser } = useContext(UserDataContext);
+
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // User login data
     const user = { email, password };
-    setUserData(user);
+    axios
+      .post(`${import.meta.env.VITE_BASE_URL}/api/users/login`, user)
+      .then((response) => {
+        if (response.status == 200) {
+          console.log("response", response);
+
+          setUser(response.data.user);
+          navigate("/home");
+        }
+      })
+      .catch((error) => console.error(error));
 
     // Clear the input fields
     setEmail("");
