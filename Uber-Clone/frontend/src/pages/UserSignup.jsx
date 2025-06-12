@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserDataContext } from "../context/UserContext";
 import axios from "axios";
 
@@ -10,6 +11,7 @@ const UserSignupPage = () => {
   const [password, setPassword] = useState("");
 
   const { user, setUser } = useContext(UserDataContext);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,19 +25,17 @@ const UserSignupPage = () => {
     axios
       .post(`${import.meta.env.VITE_BASE_URL}/api/users/register`, userData)
       .then((response) => {
-        console.log("response", response);
-
         if (response.status === 201) {
           setUser({
             fullname: {
               firstname: response.data.user.fullname.firstname,
               lastname: response.data.user.fullname.lastname,
             },
-            email: response.data.email,
-            password: response.data.password,
+            email: response.data.user.email,
+            password: response.data.user.password,
           });
 
-          console.log("user", response.data.user);
+          navigate("/home");
         }
       })
       .catch((error) => console.error(error));
