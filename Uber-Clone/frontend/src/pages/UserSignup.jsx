@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { UserDataContext } from "../context/UserContext";
+import axios from "axios";
 
 const UserSignupPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -7,14 +9,36 @@ const UserSignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [userData, setUserData] = useState({});
+  const { user, setUser } = useContext(UserDataContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // User data
-    const user = { firstName, lastName, email, password };
-    setUserData(user);
+    const userData = {
+      fullname: { firstname: firstName, lastname: lastName },
+      email,
+      password,
+    };
+
+    axios
+      .post(`${import.meta.env.VITE_BASE_URL}/api/users/register`, userData)
+      .then((response) => {
+        console.log("response", response);
+
+        if (response.status === 201) {
+          setUser({
+            fullname: {
+              firstname: response.data.user.fullname.firstname,
+              lastname: response.data.user.fullname.lastname,
+            },
+            email: response.data.email,
+            password: response.data.password,
+          });
+
+          console.log("user", response.data.user);
+        }
+      })
+      .catch((error) => console.error(error));
 
     // Clear the input fields
     setFirstName("");

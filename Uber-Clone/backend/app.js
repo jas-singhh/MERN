@@ -18,8 +18,4 @@ app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/drivers", driverRoutes);
 
-app.get("/", (req, res) => {
-    res.send("Hello World");
-})
-
 module.exports = app;
