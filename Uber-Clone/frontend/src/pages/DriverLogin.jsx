@@ -1,17 +1,36 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { DriverDataContext } from "../contexts/DriverContext";
 
 const DriverLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [driverData, setDriverData] = useState({});
+  const { setDriverData } = useContext(DriverDataContext);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Driver login data
     const driver = { email, password };
-    setDriverData(driver);
+
+    axios
+      .post(`${import.meta.env.VITE_BASE_URL}/api/drivers/login`, driver)
+      .then((response) => {
+        if (response.status === 200) {
+          setDriverData(response.data.driver); // Set driver data in context for global access
+          // Store token in localStorage
+          localStorage.setItem("token", response.data.token);
+          navigate("/driver/home");
+        }
+      })
+      .catch((error) => {
+        console.error("Error logging in:", error);
+        // Handle login error (e.g., show an error message)
+      });
 
     // Clear the input fields
     setEmail("");

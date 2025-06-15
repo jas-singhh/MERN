@@ -1,26 +1,64 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
+import { DriverDataContext } from "../contexts/DriverContext";
+import axios from "axios";
 
 const DriverSignupPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [vehicleReg, setVehicleReg] = useState("");
+  const [vehicleColour, setVehicleColour] = useState("");
+  const [vehicleSize, setVehicleSize] = useState("small"); // Default to small
+  const [vehicleCapacity, setVehicleCapacity] = useState(0);
 
-  const [driverData, setDriverData] = useState({});
+  const { setDriverData } = useContext(DriverDataContext);
+
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Driver data
-    const driver = { firstName, lastName, email, password };
-    setDriverData(driver);
+    console.log("vehicle size", vehicleSize);
+
+    const driver = {
+      fullname: { firstname: firstName, lastname: lastName },
+      email,
+      password,
+      vehicle: {
+        plate: vehicleReg,
+        colour: vehicleColour,
+        size: vehicleSize,
+        capacity: vehicleCapacity,
+      },
+    };
+
+    axios
+      .post(`${import.meta.env.VITE_BASE_URL}/api/drivers/register`, driver)
+      .then((response) => {
+        if (response.status === 201) {
+          setDriverData(driver);
+          // Store token in localStorage
+          localStorage.setItem("token", response.data.token);
+          navigate("/driver/home");
+        }
+      })
+      .catch((error) => {
+        // Handle registration error
+        console.error("Error registering driver:", error);
+      });
 
     // Clear the input fields
     setFirstName("");
     setLastName("");
     setEmail("");
     setPassword("");
+    setVehicleReg("");
+    setVehicleColour("");
+    setVehicleSize("");
+    setVehicleCapacity(0);
   };
 
   return (
@@ -86,6 +124,68 @@ const DriverSignupPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+          </div>
+
+          <div className="flex space-x-2 mb-3">
+            <div className="flex flex-1 flex-col">
+              <h3 className="font-semibold">Vehicle Reg</h3>
+              <input
+                type="text"
+                name="vehicleReg"
+                id="vehicleReg"
+                placeholder="AA00AAA"
+                className="w-full bg-[#eeeeee] p-2 rounded"
+                value={vehicleReg}
+                onChange={(e) => setVehicleReg(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col flex-1">
+              <h3 className="font-semibold">Vehicle Colour</h3>
+              <input
+                type="text"
+                name="vehicleColour"
+                id="vehicleColour"
+                placeholder="Vehicle Colour"
+                className="w-full bg-[#eeeeee] p-2 rounded"
+                value={vehicleColour}
+                onChange={(e) => setVehicleColour(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="flex space-x-2 mb-3">
+            <div className="flex flex-1 flex-col">
+              <h3 className="font-semibold">Vehicle Size</h3>
+              <select
+                name="vehicleSize"
+                id="vehicleSize"
+                className="w-full bg-[#eeeeee] p-2 rounded"
+                value={vehicleSize}
+                onChange={(e) => {
+                  setVehicleSize(e.target.value);
+                }}
+              >
+                <option value="small" defaultValue={true}>
+                  Small
+                </option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col flex-1">
+              <h3 className="font-semibold">Vehicle Capacity</h3>
+              <input
+                type="number"
+                name="vehicleCapacity"
+                id="vehicleCapacity"
+                placeholder="Vehicle Capacity"
+                className="w-full bg-[#eeeeee] p-2 rounded"
+                value={vehicleCapacity}
+                onChange={(e) => setVehicleCapacity(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col w-full justify-center items-center space-y-1">

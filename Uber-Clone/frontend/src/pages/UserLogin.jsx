@@ -8,11 +8,11 @@ const UserLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { user, setUser } = useContext(UserDataContext);
+  const { setUser } = useContext(UserDataContext);
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // User login data
@@ -21,9 +21,10 @@ const UserLoginPage = () => {
       .post(`${import.meta.env.VITE_BASE_URL}/api/users/login`, user)
       .then((response) => {
         if (response.status == 200) {
-          console.log("response", response);
-
           setUser(response.data.user);
+          // Store token in localStorage
+          localStorage.setItem("token", response.data.token);
+
           navigate("/home");
         }
       })
