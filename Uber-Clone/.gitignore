@@ -1,8 +1,7 @@
 # Nodejs
 node_modules/
 
-# Environment variables
-.env*
+# not ignoring Environment variables as they are needed for the app to run and do not contain sensitive data
 
 # Logs
 logs

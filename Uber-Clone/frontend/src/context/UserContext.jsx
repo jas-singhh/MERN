@@ -12,10 +12,6 @@ const UserContext = ({ children }) => {
     password: "",
   });
 
-  useEffect(() => {
-    console.log("user updated", user);
-  }, [user]);
-
   return (
     <UserDataContext.Provider value={{ user, setUser }}>
       {children}
