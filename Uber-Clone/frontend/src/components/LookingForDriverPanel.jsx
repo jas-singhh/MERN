@@ -1,12 +1,14 @@
+import React from "react";
 import { ChevronDown, LocateFixed, MapPin, CreditCard } from "lucide-react";
-const ConfirmRidePanel = ({ setShouldShowConfirmRidePanel, setShouldShowLookingForDriverPanel }) => {
+
+const LookingForDriverPanel = ({ setShouldShowLookingForDriverPanel, setShouldShowWaitingForDriverPanel }) => {
   return (
     <div>
-      <h5 className="w-full text-gray-200" onClick={() => setShouldShowConfirmRidePanel(false)}>
+      <h5 className="w-full text-gray-200" onClick={() => setShouldShowLookingForDriverPanel(false)}>
         <ChevronDown className="w-full" />
       </h5>
 
-      <h3 className="text-2xl font-semibold my-5">Confirm your Ride</h3>
+      <h3 className="text-2xl font-semibold text-center my-5">Looking for a Driver</h3>
       <div className="flex flex-col items-center w-full gap-4">
         {/* Image */}
         <img
@@ -59,12 +61,7 @@ const ConfirmRidePanel = ({ setShouldShowConfirmRidePanel, setShouldShowLookingF
         </div>
 
         {/* Button */}
-        <button
-          className="w-full bg-green-700 rounded-lg text-white py-3"
-          onClick={() => {
-            setShouldShowLookingForDriverPanel(true);
-          }}
-        >
+        <button className="w-full bg-green-700 rounded-lg text-white py-3" onClick={() => setShouldShowWaitingForDriverPanel(true)}>
           Confirm
         </button>
       </div>
@@ -72,4 +69,4 @@ const ConfirmRidePanel = ({ setShouldShowConfirmRidePanel, setShouldShowLookingF
   );
 };
 
-export default ConfirmRidePanel;
+export default LookingForDriverPanel;

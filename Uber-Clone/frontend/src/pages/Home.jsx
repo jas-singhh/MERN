@@ -5,14 +5,20 @@ import { useGSAP } from "@gsap/react";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
 import ConfirmRidePanel from "../components/ConfirmRidePanel";
+import LookingForDriverPanel from "../components/LookingForDriverPanel";
+import WaitingForDriver from "../components/WaitingForDriver";
 
 const HomePage = () => {
   const [shouldShowPanel, setShouldShowPanel] = useState(false);
   const [shouldShowVehiclePanel, setShouldShowVehiclePanel] = useState(false);
   const [shouldShowConfirmRidePanel, setShouldShowConfirmRidePanel] = useState(false);
+  const [shouldShowLookingForDriverPanel, setShouldShowLookingForDriverPanel] = useState(false);
+  const [shouldShowWaitingForDriverPanel, setShouldShowWaitingForDriverPanel] = useState(false);
   const panelRef = useRef(null);
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
+  const lookingForDriverPanelRef = useRef(null);
+  const waitingForDriverPanelRef = useRef(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -60,6 +66,45 @@ const HomePage = () => {
       });
     }
   }, [shouldShowConfirmRidePanel]);
+
+  useGSAP(() => {
+    if (!lookingForDriverPanelRef.current) return;
+
+    if (shouldShowLookingForDriverPanel) {
+      gsap.to(lookingForDriverPanelRef.current, {
+        transform: "translateY(0%)",
+      });
+
+      // Hide all other panels
+      setShouldShowPanel(false);
+      setShouldShowVehiclePanel(false);
+      setShouldShowConfirmRidePanel(false);
+    } else {
+      gsap.to(lookingForDriverPanelRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  }, [shouldShowLookingForDriverPanel]);
+
+  useGSAP(() => {
+    if (!waitingForDriverPanelRef.current) return;
+
+    if (shouldShowWaitingForDriverPanel) {
+      gsap.to(waitingForDriverPanelRef.current, {
+        transform: "translateY(0%)",
+      });
+
+      // Hide all other panels
+      setShouldShowPanel(false);
+      setShouldShowVehiclePanel(false);
+      setShouldShowConfirmRidePanel(false);
+      setShouldShowLookingForDriverPanel(false);
+    } else {
+      gsap.to(waitingForDriverPanelRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  }, [shouldShowWaitingForDriverPanel]);
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -119,7 +164,21 @@ const HomePage = () => {
       </div>
 
       <div className="w-full fixed bottom-0 z-[9999] bg-white p-6 pt-3 translate-y-full" ref={confirmRidePanelRef}>
-        <ConfirmRidePanel setShouldShowConfirmRidePanel={setShouldShowConfirmRidePanel} />
+        <ConfirmRidePanel
+          setShouldShowConfirmRidePanel={setShouldShowConfirmRidePanel}
+          setShouldShowLookingForDriverPanel={setShouldShowLookingForDriverPanel}
+        />
+      </div>
+
+      <div className="w-full fixed bottom-0 z-[9999] bg-white p-6 pt-3 translate-y-full" ref={lookingForDriverPanelRef}>
+        <LookingForDriverPanel
+          setShouldShowLookingForDriverPanel={setShouldShowLookingForDriverPanel}
+          setShouldShowWaitingForDriverPanel={setShouldShowWaitingForDriverPanel}
+        />
+      </div>
+
+      <div className="w-full fixed bottom-0 z-[9999] bg-white p-6 pt-3 translate-y-full" ref={waitingForDriverPanelRef}>
+        <WaitingForDriver setShouldShowWaitingForDriverPanel={setShouldShowWaitingForDriverPanel} />
       </div>
     </div>
   );
