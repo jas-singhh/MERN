@@ -6,7 +6,9 @@ import LocationSearchPanel from "../components/LocationSearchPanel";
 
 const HomePage = () => {
   const [shouldShowPanel, setShouldShowPanel] = useState(false);
+  const [shouldShowVehiclePanel, setShouldShowVehiclePanel] = useState(false);
   const panelRef = useRef(null);
+  const vehiclePanelRef = useRef(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -27,13 +29,23 @@ const HomePage = () => {
     }
   }, [shouldShowPanel]);
 
+  useGSAP(() => {
+    if (!vehiclePanelRef.current) return;
+
+    if (shouldShowVehiclePanel) {
+      gsap.to(vehiclePanelRef.current, {
+        transform: "translateY(0%)",
+      });
+    } else {
+      gsap.to(vehiclePanelRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  }, [shouldShowVehiclePanel]);
+
   return (
     <div className="h-screen relative overflow-hidden">
-      <img
-        src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
-        alt="Uber Logo"
-        className="w-14 absolute top-4 left-4 z-10"
-      />
+      <img src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png" alt="Uber Logo" className="w-14 absolute top-4 left-4 z-10" />
 
       <div className="w-screen h-screen">
         {/* Temporary image */}
@@ -47,17 +59,11 @@ const HomePage = () => {
       <div className="absolute top-0 w-full z-100 shadow-lg h-screen flex flex-col justify-end">
         <div className="flex flex-col w-full h-[30%] bg-white p-6">
           {shouldShowPanel ? (
-            <ChevronDown
-              className="mb-4 ml-2 w-8 h-8"
-              onClick={() => setShouldShowPanel(false)}
-            />
+            <ChevronDown className="mb-4 ml-2 w-8 h-8" onClick={() => setShouldShowPanel(false)} />
           ) : (
             <h4 className="text-2xl font-semibold mb-2">Find a Ride</h4>
           )}
-          <form
-            className="relative w-full h-full"
-            onSubmit={(e) => submitHandler(e)}
-          >
+          <form className="relative w-full h-full" onSubmit={(e) => submitHandler(e)}>
             {/* Pickup */}
             <div className="relative w-full flex items-center">
               <div className="absolute left-4 top-3">
@@ -86,15 +92,19 @@ const HomePage = () => {
         </div>
 
         <div className={`w-full h-0 bg-white px-7 `} ref={panelRef}>
-          <LocationSearchPanel />
+          <LocationSearchPanel setShouldShowVehiclePanel={setShouldShowVehiclePanel} setShouldShowPanel={setShouldShowPanel} />
         </div>
       </div>
 
-      <div className="w-full fixed bottom-0 z-[9999] bg-white px-3 py-6 translate-y-full">
+      <div className="w-full fixed bottom-0 z-[9999] bg-white p-6 pt-3 translate-y-full" ref={vehiclePanelRef}>
+        <h5 className="w-ful  text-gray-200" onClick={() => setShouldShowVehiclePanel(false)}>
+          <ChevronDown className="w-full " />
+        </h5>
+
         <h3 className="text-2xl font-semibold mb-5">Select a Ride</h3>
 
         {/* Extra small ride */}
-        <div className="flex justify-between items-center w-full rounded bg-gray-100 px-2 py-4 mb-2">
+        <div className="flex justify-between items-center w-full rounded border-[1px] border-gray-300 px-2 py-4 mb-2">
           <img
             src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_311,w_552/v1630694937/assets/43/a4d033-3346-4b1a-a42d-af4fbe2e935e/original/uber-bike.png"
             alt="Uber Bicycle Icon"
@@ -115,7 +125,7 @@ const HomePage = () => {
         </div>
 
         {/* Small ride */}
-        <div className="flex justify-between items-center w-full rounded bg-gray-100 px-2 py-4 mb-2">
+        <div className="flex justify-between items-center w-full rounded border-[1px] border-gray-300 px-2 py-4 mb-2">
           <img
             src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1548646918/assets/e9/2eeb8f-3764-4e26-8b17-5905a75e7e85/original/2.png"
             alt="Uber Small Car Icon"
@@ -136,7 +146,7 @@ const HomePage = () => {
         </div>
 
         {/* Medium ride */}
-        <div className="flex justify-between items-center w-full rounded bg-gray-100 px-2 py-4 mb-2">
+        <div className="flex justify-between items-center w-full rounded border-[1px] border-gray-300 px-2 py-4 mb-2">
           <img
             src="https://www.pngplay.com/wp-content/uploads/8/Uber-PNG-Photos.png"
             alt="Uber Medium Car Icon"
@@ -157,7 +167,7 @@ const HomePage = () => {
         </div>
 
         {/* Large ride */}
-        <div className="flex justify-between items-center w-full rounded bg-gray-100 px-2 py-4 mb-2">
+        <div className="flex justify-between items-center w-full rounded border-[1px] border-gray-300 px-2 py-4 mb-2">
           <img
             src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1743773253/assets/5e/8ce23d-35fa-425d-a7d2-08a2826d04bc/original/UberBlackXL.png"
             alt="Uber Large Car Icon"
