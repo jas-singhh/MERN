@@ -9,6 +9,7 @@ import DriverSignupPage from "./pages/DriverSignup";
 import UserProtectWrapper from "./pages/UserProtectWrapper";
 import UserLogout from "./pages/UserLogout";
 import DriverProtectWrapper from "./pages/DriverProtectWrapper";
+import Riding from "./pages/Riding";
 
 const App = () => {
   return (
@@ -22,6 +23,14 @@ const App = () => {
           element={
             <UserProtectWrapper>
               <HomePage />
+            </UserProtectWrapper>
+          }
+        />
+        <Route
+          path="/riding"
+          element={
+            <UserProtectWrapper>
+              <Riding />
             </UserProtectWrapper>
           }
         />
